@@ -6,12 +6,14 @@ from typing import Optional
 
 import numpy as np
 
+from apps.engine.elo import compute_current_elo
 from apps.engine.nrr import (
     ALL_TEAMS,
     calculate_all_standings,
     generate_scoreline,
     parse_overs,
 )
+from apps.engine.weights import calculate_match_probability, load_h2h
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -100,9 +102,11 @@ def rank_teams(standings_dict: dict) -> list[str]:
     return sorted(ALL_TEAMS, key=sort_key, reverse=True)
 
 
-def play_match(team1: str, team2: str, rng: np.random.Generator) -> tuple[str, str]:
-    """Phase 1: flat 50/50. Returns (winner, loser)."""
-    if rng.random() < 0.5:
+def play_match(
+    team1: str, team2: str, rng: np.random.Generator, win_prob_team1: float = 0.5
+) -> tuple[str, str]:
+    """Returns (winner, loser) based on win probability for team1."""
+    if rng.random() < win_prob_team1:
         return (team1, team2)
     return (team2, team1)
 
@@ -121,14 +125,16 @@ def simulate_one_season(
     remaining: list[dict],
     venues: dict,
     rng: np.random.Generator,
+    match_probs: Optional[list[float]] = None,
 ) -> tuple[list[str], str]:
     """Run one simulation of the remaining season. Returns (ranked_team_codes, champion)."""
     standings_copy = copy_standings(base_standings)
     sd = {s["team"]: s for s in standings_copy}
 
-    for match in remaining:
+    for i, match in enumerate(remaining):
         venue_data = venues[match["venue"]]
-        winner, loser = play_match(match["team1"], match["team2"], rng)
+        prob = match_probs[i] if match_probs else 0.5
+        winner, loser = play_match(match["team1"], match["team2"], rng, prob)
         bat_first = match["team1"] if rng.random() < 0.5 else match["team2"]
         scoreline = generate_scoreline(venue_data, rng)
         update_standings_for_match(sd, match["team1"], match["team2"], winner, bat_first, scoreline)
@@ -147,11 +153,22 @@ def simulate_season(n_sims: int = 50000, seed: Optional[int] = None) -> list[dic
     venues = load_venues()
 
     base_standings = calculate_all_standings(completed)
+
+    # Pre-compute weighted match probabilities (once, not per sim)
+    elo_ratings = compute_current_elo(completed)
+    h2h_data = load_h2h()
+    match_probs = [
+        calculate_match_probability(m, completed, elo_ratings, venues, h2h_data)
+        for m in remaining
+    ]
+
     counts = {team: {"top4": 0, "top2": 0, "title": 0} for team in ALL_TEAMS}
     rng = np.random.default_rng(seed)
 
     for _ in range(n_sims):
-        ranked, champion = simulate_one_season(base_standings, remaining, venues, rng)
+        ranked, champion = simulate_one_season(
+            base_standings, remaining, venues, rng, match_probs
+        )
 
         for team in ranked[:4]:
             counts[team]["top4"] += 1
