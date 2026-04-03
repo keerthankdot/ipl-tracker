@@ -29,6 +29,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:3001",
         "https://winpath.ascnd.in",
+        "https://ipl-tracker-mu.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
