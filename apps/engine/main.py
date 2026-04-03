@@ -58,6 +58,16 @@ class ImpactRequest(BaseModel):
     n_simulations: int = 10000
 
 
+class ScenarioOutcome(BaseModel):
+    match_id: str
+    winner: str
+
+
+class ScenarioRequest(BaseModel):
+    outcomes: list[ScenarioOutcome]
+    n_simulations: int = 5000
+
+
 def _now_ist() -> str:
     return datetime.now(IST).isoformat()
 
@@ -236,3 +246,59 @@ def impact(req: ImpactRequest):
 
     _impact_cache[impact_key] = result
     return result
+
+
+@app.post("/api/scenario")
+def scenario(req: ScenarioRequest):
+    sched = load_schedule()
+    completed = get_completed_matches(sched)
+    remaining = get_remaining_matches(sched)
+
+    remaining_ids = {m["id"] for m in remaining}
+    for outcome in req.outcomes:
+        if outcome.match_id not in remaining_ids:
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Match {outcome.match_id} not found in upcoming matches"},
+            )
+
+    forced = {o.match_id: o.winner for o in req.outcomes}
+
+    baseline = simulate_season(n_sims=req.n_simulations)
+
+    if not forced:
+        return {
+            "results": baseline,
+            "baseline": baseline,
+            "deltas": [{"team": t, "top4_delta": 0.0, "top2_delta": 0.0, "title_delta": 0.0} for t in ALL_TEAMS],
+            "forced_count": 0,
+            "simulations_run": req.n_simulations,
+            "generated_at": _now_ist(),
+        }
+
+    scenario_results = simulate_with_forced_outcomes(
+        forced=forced, n_sims=req.n_simulations
+    )
+
+    baseline_map = {r["team"]: r for r in baseline}
+    scenario_map = {r["team"]: r for r in scenario_results}
+
+    deltas = []
+    for team in ALL_TEAMS:
+        deltas.append({
+            "team": team,
+            "top4_delta": round(scenario_map[team]["top4_pct"] - baseline_map[team]["top4_pct"], 1),
+            "top2_delta": round(scenario_map[team]["top2_pct"] - baseline_map[team]["top2_pct"], 1),
+            "title_delta": round(scenario_map[team]["title_pct"] - baseline_map[team]["title_pct"], 1),
+        })
+    deltas.sort(key=lambda d: abs(d["top4_delta"]), reverse=True)
+
+    return {
+        "results": scenario_results,
+        "baseline": baseline,
+        "deltas": deltas,
+        "forced_count": len(forced),
+        "simulations_run": req.n_simulations,
+        "generated_at": _now_ist(),
+    }

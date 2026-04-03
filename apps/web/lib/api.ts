@@ -1,4 +1,4 @@
-import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse } from "./types";
+import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse, ScenarioOutcome, ScenarioResponse } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -31,5 +31,15 @@ export async function getImpact(matchId: string): Promise<ImpactResponse> {
     body: JSON.stringify({ match_id: matchId }),
   });
   if (!res.ok) throw new Error(`Impact API error: ${res.status}`);
+  return res.json();
+}
+
+export async function runScenario(outcomes: ScenarioOutcome[]): Promise<ScenarioResponse> {
+  const res = await fetch(`${API_URL}/api/scenario`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ outcomes }),
+  });
+  if (!res.ok) throw new Error(`Scenario API error: ${res.status}`);
   return res.json();
 }

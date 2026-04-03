@@ -81,3 +81,24 @@ export interface ImpactResponse {
   simulations_run: number;
   generated_at: string;
 }
+
+export interface ScenarioOutcome {
+  match_id: string;
+  winner: string;
+}
+
+export interface ScenarioDelta {
+  team: string;
+  top4_delta: number;
+  top2_delta: number;
+  title_delta: number;
+}
+
+export interface ScenarioResponse {
+  results: SimulationTeamResult[];
+  baseline: SimulationTeamResult[];
+  deltas: ScenarioDelta[];
+  forced_count: number;
+  simulations_run: number;
+  generated_at: string;
+}
