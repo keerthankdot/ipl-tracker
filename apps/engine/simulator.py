@@ -126,15 +126,23 @@ def simulate_one_season(
     venues: dict,
     rng: np.random.Generator,
     match_probs: Optional[list[float]] = None,
+    forced_outcomes: Optional[dict[int, str]] = None,
 ) -> tuple[list[str], str]:
-    """Run one simulation of the remaining season. Returns (ranked_team_codes, champion)."""
+    """Run one simulation of the remaining season. Returns (ranked_team_codes, champion).
+
+    forced_outcomes: optional dict mapping match index to forced winner team code.
+    """
     standings_copy = copy_standings(base_standings)
     sd = {s["team"]: s for s in standings_copy}
 
     for i, match in enumerate(remaining):
         venue_data = venues[match["venue"]]
-        prob = match_probs[i] if match_probs else 0.5
-        winner, loser = play_match(match["team1"], match["team2"], rng, prob)
+        if forced_outcomes and i in forced_outcomes:
+            forced_winner = forced_outcomes[i]
+            winner = forced_winner
+        else:
+            prob = match_probs[i] if match_probs else 0.5
+            winner, _ = play_match(match["team1"], match["team2"], rng, prob)
         bat_first = match["team1"] if rng.random() < 0.5 else match["team2"]
         scoreline = generate_scoreline(venue_data, rng)
         update_standings_for_match(sd, match["team1"], match["team2"], winner, bat_first, scoreline)
@@ -185,5 +193,61 @@ def simulate_season(n_sims: int = 50000, seed: Optional[int] = None) -> list[dic
             "title_pct": round(counts[team]["title"] / n_sims * 100, 1),
         })
 
+    results.sort(key=lambda r: r["top4_pct"], reverse=True)
+    return results
+
+
+def simulate_with_forced_outcomes(
+    forced: dict[str, str],
+    n_sims: int = 10000,
+    seed: Optional[int] = None,
+) -> list[dict]:
+    """Run simulation with specific match outcomes forced.
+
+    Args:
+        forced: {match_id: winner_team_code}, e.g. {"M007": "CSK"}
+        n_sims: simulations to run (default 10K for interactive speed)
+        seed: optional random seed
+    """
+    schedule = load_schedule()
+    completed = get_completed_matches(schedule)
+    remaining = get_remaining_matches(schedule)
+    venues = load_venues()
+
+    base_standings = calculate_all_standings(completed)
+    elo_ratings = compute_current_elo(completed)
+    h2h_data = load_h2h()
+    match_probs = [
+        calculate_match_probability(m, completed, elo_ratings, venues, h2h_data)
+        for m in remaining
+    ]
+
+    # Map match_id to index
+    forced_indices: dict[int, str] = {}
+    for i, match in enumerate(remaining):
+        if match["id"] in forced:
+            forced_indices[i] = forced[match["id"]]
+
+    counts = {team: {"top4": 0, "top2": 0, "title": 0} for team in ALL_TEAMS}
+    rng = np.random.default_rng(seed)
+
+    for _ in range(n_sims):
+        ranked, champion = simulate_one_season(
+            base_standings, remaining, venues, rng, match_probs, forced_indices
+        )
+        for team in ranked[:4]:
+            counts[team]["top4"] += 1
+        for team in ranked[:2]:
+            counts[team]["top2"] += 1
+        counts[champion]["title"] += 1
+
+    results = []
+    for team in ALL_TEAMS:
+        results.append({
+            "team": team,
+            "top4_pct": round(counts[team]["top4"] / n_sims * 100, 1),
+            "top2_pct": round(counts[team]["top2"] / n_sims * 100, 1),
+            "title_pct": round(counts[team]["title"] / n_sims * 100, 1),
+        })
     results.sort(key=lambda r: r["top4_pct"], reverse=True)
     return results

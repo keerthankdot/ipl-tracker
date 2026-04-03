@@ -1,4 +1,4 @@
-import type { StandingsResponse, SimulateResponse, ScheduleResponse } from "./types";
+import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -14,9 +14,22 @@ export async function simulate(): Promise<SimulateResponse> {
   return res.json();
 }
 
-export async function getSchedule(team?: string): Promise<ScheduleResponse> {
-  const params = team ? `?team=${team}` : "";
-  const res = await fetch(`${API_URL}/api/schedule${params}`);
+export async function getSchedule(team?: string, status?: string): Promise<ScheduleResponse> {
+  const params = new URLSearchParams();
+  if (team) params.set("team", team);
+  if (status) params.set("status", status);
+  const qs = params.toString() ? `?${params.toString()}` : "";
+  const res = await fetch(`${API_URL}/api/schedule${qs}`);
   if (!res.ok) throw new Error(`Schedule API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getImpact(matchId: string): Promise<ImpactResponse> {
+  const res = await fetch(`${API_URL}/api/impact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ match_id: matchId }),
+  });
+  if (!res.ok) throw new Error(`Impact API error: ${res.status}`);
   return res.json();
 }

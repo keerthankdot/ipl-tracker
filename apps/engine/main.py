@@ -8,6 +8,9 @@ from typing import Optional
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from pydantic import BaseModel
+
+from apps.engine.elo import compute_current_elo
 from apps.engine.nrr import ALL_TEAMS, calculate_all_standings
 from apps.engine.simulator import (
     get_completed_matches,
@@ -15,7 +18,9 @@ from apps.engine.simulator import (
     load_schedule,
     load_venues,
     simulate_season,
+    simulate_with_forced_outcomes,
 )
+from apps.engine.weights import calculate_match_probability, load_h2h
 
 app = FastAPI(
     title="Win Path Engine",
@@ -44,6 +49,13 @@ _sim_cache: dict = {
     "generated_at": None,
     "elapsed": None,
 }
+
+_impact_cache: dict = {}
+
+
+class ImpactRequest(BaseModel):
+    match_id: str
+    n_simulations: int = 10000
 
 
 def _now_ist() -> str:
@@ -144,3 +156,83 @@ def simulate(n_simulations: int = 50000):
         "generated_at": _sim_cache["generated_at"],
         "cached": False,
     }
+
+
+@app.post("/api/impact")
+def impact(req: ImpactRequest):
+    sched = load_schedule()
+    completed = get_completed_matches(sched)
+    remaining = get_remaining_matches(sched)
+
+    target = next((m for m in remaining if m["id"] == req.match_id), None)
+    if not target:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=404,
+            content={"error": f"Match {req.match_id} not found or already completed"},
+        )
+
+    # Check cache
+    key = _cache_key(completed)
+    impact_key = (key, req.match_id)
+    if impact_key in _impact_cache:
+        return _impact_cache[impact_key]
+
+    # Baseline
+    baseline = simulate_season(n_sims=req.n_simulations)
+
+    # Scenario A: team1 wins
+    scenario_a = simulate_with_forced_outcomes(
+        forced={req.match_id: target["team1"]}, n_sims=req.n_simulations
+    )
+
+    # Scenario B: team2 wins
+    scenario_b = simulate_with_forced_outcomes(
+        forced={req.match_id: target["team2"]}, n_sims=req.n_simulations
+    )
+
+    baseline_map = {r["team"]: r["top4_pct"] for r in baseline}
+    scenario_a_map = {r["team"]: r["top4_pct"] for r in scenario_a}
+    scenario_b_map = {r["team"]: r["top4_pct"] for r in scenario_b}
+
+    impact_list = []
+    for team in ALL_TEAMS:
+        delta_a = round(scenario_a_map[team] - baseline_map[team], 1)
+        delta_b = round(scenario_b_map[team] - baseline_map[team], 1)
+        impact_list.append({
+            "team": team,
+            "if_team1_wins": delta_a,
+            "if_team2_wins": delta_b,
+            "most_affected": abs(delta_a) > 3 or abs(delta_b) > 3,
+        })
+    impact_list.sort(
+        key=lambda x: max(abs(x["if_team1_wins"]), abs(x["if_team2_wins"])),
+        reverse=True,
+    )
+
+    # Match win probability
+    elo_ratings = compute_current_elo(completed)
+    h2h_data = load_h2h()
+    venues = load_venues()
+    win_prob = calculate_match_probability(target, completed, elo_ratings, venues, h2h_data)
+
+    result = {
+        "match": {
+            "id": target["id"],
+            "team1": target["team1"],
+            "team2": target["team2"],
+            "date": target["date"],
+            "venue": target["venue"],
+            "team1_win_pct": round(win_prob * 100, 1),
+            "team2_win_pct": round((1 - win_prob) * 100, 1),
+        },
+        "baseline": baseline,
+        "if_team1_wins": scenario_a,
+        "if_team2_wins": scenario_b,
+        "impact": impact_list,
+        "simulations_run": req.n_simulations,
+        "generated_at": _now_ist(),
+    }
+
+    _impact_cache[impact_key] = result
+    return result

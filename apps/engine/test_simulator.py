@@ -17,6 +17,7 @@ from apps.engine.simulator import (
     simulate_one_season,
     simulate_playoffs,
     simulate_season,
+    simulate_with_forced_outcomes,
     update_standings_for_match,
 )
 
@@ -299,6 +300,50 @@ class TestMonteCarlo:
 # ===========================================================================
 # GROUP 6: Performance
 # ===========================================================================
+
+# ===========================================================================
+# GROUP 7: Forced Outcomes / Impact
+# ===========================================================================
+
+class TestForcedOutcomes:
+    def test_forced_sums_correct(self):
+        results = simulate_with_forced_outcomes({"M007": "CSK"}, n_sims=5000, seed=42)
+        total = sum(r["top4_pct"] for r in results)
+        assert abs(total - 400.0) < 5.0
+
+    def test_forced_csk_wins_helps_csk(self):
+        baseline = simulate_season(n_sims=5000, seed=42)
+        forced = simulate_with_forced_outcomes({"M007": "CSK"}, n_sims=5000, seed=42)
+        bl_csk = next(r for r in baseline if r["team"] == "CSK")["top4_pct"]
+        fo_csk = next(r for r in forced if r["team"] == "CSK")["top4_pct"]
+        assert fo_csk > bl_csk  # Forcing CSK win should help CSK
+
+    def test_forced_pbks_wins_helps_pbks(self):
+        baseline = simulate_season(n_sims=5000, seed=42)
+        forced = simulate_with_forced_outcomes({"M007": "PBKS"}, n_sims=5000, seed=42)
+        bl = next(r for r in baseline if r["team"] == "PBKS")["top4_pct"]
+        fo = next(r for r in forced if r["team"] == "PBKS")["top4_pct"]
+        assert fo > bl
+
+    def test_forced_deterministic(self):
+        r1 = simulate_with_forced_outcomes({"M007": "CSK"}, n_sims=1000, seed=42)
+        r2 = simulate_with_forced_outcomes({"M007": "CSK"}, n_sims=1000, seed=42)
+        for a, b in zip(r1, r2):
+            assert a["top4_pct"] == b["top4_pct"]
+
+    def test_forced_invalid_match_ignored(self):
+        # Should not crash
+        results = simulate_with_forced_outcomes({"M999": "CSK"}, n_sims=1000, seed=42)
+        assert len(results) == 10
+
+    def test_forced_multiple_matches(self):
+        results = simulate_with_forced_outcomes(
+            {"M007": "CSK", "M008": "MI", "M009": "RR"}, n_sims=1000, seed=42
+        )
+        assert len(results) == 10
+        total = sum(r["top4_pct"] for r in results)
+        assert abs(total - 400.0) < 10.0
+
 
 class TestPerformance:
     def test_50k_under_30_seconds(self):

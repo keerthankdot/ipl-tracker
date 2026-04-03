@@ -54,3 +54,30 @@ export interface ScheduleResponse {
   total: number;
   filtered: number;
 }
+
+export interface MatchImpactTeam {
+  team: string;
+  if_team1_wins: number;
+  if_team2_wins: number;
+  most_affected: boolean;
+}
+
+export interface ImpactMatch {
+  id: string;
+  team1: string;
+  team2: string;
+  date: string;
+  venue: string;
+  team1_win_pct: number;
+  team2_win_pct: number;
+}
+
+export interface ImpactResponse {
+  match: ImpactMatch;
+  baseline: SimulationTeamResult[];
+  if_team1_wins: SimulationTeamResult[];
+  if_team2_wins: SimulationTeamResult[];
+  impact: MatchImpactTeam[];
+  simulations_run: number;
+  generated_at: string;
+}
