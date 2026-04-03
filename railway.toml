@@ -1,0 +1,5 @@
+[build]
+dockerfilePath = "Dockerfile.engine"
+
+[deploy]
+startCommand = "uvicorn apps.engine.main:app --host 0.0.0.0 --port 8000"

@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Recreate the import path structure
+RUN mkdir -p apps/engine
+
+# Install dependencies
+COPY apps/engine/requirements.txt apps/engine/
+RUN pip install --no-cache-dir -r apps/engine/requirements.txt
+
+# Copy engine code into the correct path
+COPY apps/engine/ apps/engine/
+
+# PYTHONPATH so `from apps.engine.nrr import ...` works
+ENV PYTHONPATH=/app
+
+EXPOSE 8000
+
+CMD ["uvicorn", "apps.engine.main:app", "--host", "0.0.0.0", "--port", "8000"]

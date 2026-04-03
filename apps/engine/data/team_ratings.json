@@ -1,0 +1,12 @@
+{
+  "RCB":  { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "CSK":  { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "MI":   { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "KKR":  { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "SRH":  { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "RR":   { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "DC":   { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "PBKS": { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "GT":   { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 },
+  "LSG":  { "elo": 1500, "batting_index": 1.0, "bowling_index": 1.0 }
+}
