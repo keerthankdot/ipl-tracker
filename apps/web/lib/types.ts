@@ -140,3 +140,143 @@ export interface WinPathResponse {
   summary: WinPathSummary;
   generated_at: string;
 }
+
+export interface MatchDetailVenue {
+  name: string;
+  city: string;
+  capacity: number | null;
+  avg_1st_innings: number;
+  avg_2nd_innings: number;
+  bat_first_win_pct: number;
+  chase_win_pct: number;
+  pace_wicket_pct: number;
+  spin_wicket_pct: number;
+  dew_factor: string;
+  altitude_m: number | null;
+  boundary_avg_m: number | null;
+  notes: string;
+}
+
+export interface MatchDetailToss {
+  bat_first_win_pct: number;
+  chase_win_pct: number;
+  recommendation: string;
+  dew_factor: string;
+}
+
+export interface MatchDetailH2H {
+  my_wins: number;
+  opponent_wins: number;
+  total: number;
+  my_win_pct: number;
+}
+
+export interface DewPrediction {
+  level: "heavy" | "moderate" | "light" | "none";
+  impact: string;
+  is_evening_match: boolean;
+}
+
+export interface WeatherData {
+  temperature_c: number;
+  humidity_pct: number;
+  wind_speed_kmh: number;
+  wind_direction_deg: number;
+  rain_probability_pct: number;
+  rain_mm: number;
+  cloud_cover_pct: number;
+  description: string;
+  dew: DewPrediction;
+  forecast_for: string;
+}
+
+export interface MatchDetailResponse {
+  match_id: string;
+  team: string;
+  opponent: string;
+  date: string;
+  time: string;
+  status: string;
+  is_home: boolean;
+  win_prob: number | null;
+  classification: string | null;
+  impact: { impact_pct: number; team_top4_pct: number } | null;
+  result: {
+    result: string;
+    score_team1: string;
+    overs_team1: string;
+    score_team2: string;
+    overs_team2: string;
+    winner: string;
+  } | null;
+  venue: MatchDetailVenue;
+  toss: MatchDetailToss;
+  h2h: MatchDetailH2H;
+  weather: WeatherData | null;
+  players: MatchPlayers | null;
+  generated_at: string;
+}
+
+export interface PlayerBattingSummary {
+  innings: number;
+  total_runs: number;
+  avg: number;
+  strike_rate: number;
+}
+
+export interface PlayerBowlingSummary {
+  innings: number;
+  wickets: number;
+  economy: number;
+  avg: number | null;
+}
+
+export interface PlayerForm {
+  id: string;
+  name: string;
+  team: string;
+  role: "batter" | "bowler" | "allrounder";
+  matches_played: number;
+  summary: {
+    batting: PlayerBattingSummary | null;
+    bowling: PlayerBowlingSummary | null;
+  };
+}
+
+export interface MatchPlayers {
+  team1_players: PlayerForm[];
+  team2_players: PlayerForm[];
+}
+
+export interface NRRScenarioBatChase {
+  description: string;
+  min_margin_runs?: number;
+  max_overs?: string;
+  resulting_nrr: number;
+}
+
+export interface NRRScenario {
+  target: string;
+  target_team?: string;
+  target_nrr?: number;
+  bat_first?: NRRScenarioBatChase;
+  chase?: NRRScenarioBatChase;
+  feasibility?: string;
+  description?: string;
+  worst_case_nrr?: number;
+  resulting_rank?: number;
+}
+
+export interface NRRStrategyResponse {
+  team: string;
+  current_nrr: number;
+  nrr_rank: number;
+  next_match: {
+    id: string;
+    opponent: string;
+    venue: string;
+    venue_avg_1st: number;
+  };
+  scenarios: NRRScenario[];
+  generated_at: string;
+}

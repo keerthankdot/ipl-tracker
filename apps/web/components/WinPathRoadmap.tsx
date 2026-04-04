@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { TEAMS, type TeamKey } from "@/lib/teams";
 import type { WinPathResponse } from "@/lib/types";
@@ -71,12 +72,13 @@ export default function WinPathRoadmap({ winPath, team }: WinPathRoadmapProps) {
         {winPath.matches.map((m) => {
           const oppData = TEAMS[m.opponent as TeamKey];
           const isMustWin = m.classification === "MUST_WIN";
+          const teamSlug = winPath.team.toLowerCase();
 
           if (m.status === "completed") {
             return (
+              <Link key={m.id} href={`/${teamSlug}/match/${m.id}`} className="block">
               <div
-                key={m.id}
-                className="bg-surface rounded-lg p-4 border border-border/50 opacity-80"
+                className="bg-surface rounded-lg p-4 border border-border/50 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -104,13 +106,14 @@ export default function WinPathRoadmap({ winPath, team }: WinPathRoadmapProps) {
                   {m.score ? ` \u00B7 ${m.score}` : ""}
                 </div>
               </div>
+              </Link>
             );
           }
 
           return (
+            <Link key={m.id} href={`/${teamSlug}/match/${m.id}`} className="block">
             <motion.div
-              key={m.id}
-              className="bg-surface rounded-lg p-4"
+              className="bg-surface rounded-lg p-4 hover:bg-surface-2/50 transition-colors cursor-pointer"
               style={{
                 borderWidth: isMustWin ? 2 : 1,
                 borderStyle: "solid",
@@ -181,6 +184,7 @@ export default function WinPathRoadmap({ winPath, team }: WinPathRoadmapProps) {
                 )}
               </div>
             </motion.div>
+            </Link>
           );
         })}
       </div>

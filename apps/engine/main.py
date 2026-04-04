@@ -3,7 +3,11 @@ from __future__ import annotations
 import hashlib
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path as _Path
 from typing import Optional
+
+from dotenv import load_dotenv
+load_dotenv(_Path(__file__).parent / ".env")
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from apps.engine.classifier import classify_match, estimate_impact
+from apps.engine.nrr_strategy import generate_nrr_strategy
 from apps.engine.elo import compute_current_elo
 from apps.engine.nrr import ALL_TEAMS, calculate_all_standings
 from apps.engine.simulator import (
@@ -389,5 +394,176 @@ def winpath(team: str):
             "tough": sum(1 for m in upcoming if m["classification"] == "TOUGH"),
             "upset_needed": sum(1 for m in upcoming if m["classification"] == "UPSET_NEEDED"),
         },
+        "generated_at": _now_ist(),
+    }
+
+
+@app.get("/api/nrr-strategy/{team}")
+def nrr_strategy(team: str):
+    team_upper = team.upper()
+    if team_upper not in ALL_TEAMS:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=404, content={"error": f"Unknown team: {team}"})
+
+    sched = load_schedule()
+    completed = get_completed_matches(sched)
+    remaining = get_remaining_matches(sched)
+    venues = load_venues()
+
+    standings = calculate_all_standings(completed)
+
+    team_remaining = [
+        m for m in remaining
+        if m["team1"] == team_upper or m["team2"] == team_upper
+    ]
+    if not team_remaining:
+        return {"team": team_upper, "scenarios": [], "generated_at": _now_ist()}
+
+    next_match = team_remaining[0]
+    venue_data = venues.get(next_match["venue"], {})
+    venue_avg = venue_data.get("avg_1st_innings", 165)
+
+    result = generate_nrr_strategy(team_upper, standings, next_match, venue_avg)
+    result["generated_at"] = _now_ist()
+    return result
+
+
+@app.get("/api/match-detail/{match_id}/{team}")
+def match_detail(match_id: str, team: str):
+    from fastapi.responses import JSONResponse
+
+    team_upper = team.upper()
+    if team_upper not in ALL_TEAMS:
+        return JSONResponse(status_code=404, content={"error": f"Unknown team: {team}"})
+
+    sched = load_schedule()
+    completed = get_completed_matches(sched)
+    remaining = get_remaining_matches(sched)
+    venues = load_venues()
+
+    # Find the match
+    all_matches = sched["matches"]
+    match = next((m for m in all_matches if m["id"] == match_id), None)
+    if not match:
+        return JSONResponse(status_code=404, content={"error": f"Match {match_id} not found"})
+
+    if match.get("team1") != team_upper and match.get("team2") != team_upper:
+        return JSONResponse(status_code=400, content={"error": f"{team_upper} is not playing in {match_id}"})
+
+    opponent = match["team2"] if match["team1"] == team_upper else match["team1"]
+    venue_key = match["venue"]
+    venue_data = venues.get(venue_key, {})
+    is_home = venue_data.get("city", "") in TEAM_HOME_CITIES.get(team_upper, [])
+
+    # Venue intelligence
+    venue_intel = {
+        "name": venue_data.get("name", venue_key),
+        "city": venue_data.get("city", ""),
+        "capacity": venue_data.get("capacity"),
+        "avg_1st_innings": venue_data.get("avg_1st_innings", 165),
+        "avg_2nd_innings": venue_data.get("avg_2nd_innings", 155),
+        "bat_first_win_pct": venue_data.get("bat_first_win_pct", 50),
+        "chase_win_pct": venue_data.get("chase_win_pct", 50),
+        "pace_wicket_pct": venue_data.get("pace_wicket_pct", 50),
+        "spin_wicket_pct": venue_data.get("spin_wicket_pct", 50),
+        "dew_factor": venue_data.get("dew_factor", "moderate"),
+        "altitude_m": venue_data.get("altitude_m"),
+        "boundary_avg_m": venue_data.get("boundary_avg_m"),
+        "notes": venue_data.get("notes", ""),
+    }
+
+    # Toss analysis: derive from venue bat-first/chase stats
+    toss_analysis = {
+        "bat_first_win_pct": venue_data.get("bat_first_win_pct", 50),
+        "chase_win_pct": venue_data.get("chase_win_pct", 50),
+        "recommendation": "Bowl first" if venue_data.get("chase_win_pct", 50) > 52 else "Bat first" if venue_data.get("bat_first_win_pct", 50) > 52 else "No clear advantage",
+        "dew_factor": venue_data.get("dew_factor", "moderate"),
+    }
+
+    # H2H
+    h2h_data = load_h2h()
+    teams_sorted = sorted([team_upper, opponent])
+    h2h_key = f"{teams_sorted[0]}_vs_{teams_sorted[1]}"
+    h2h_record = h2h_data.get(h2h_key, {"team1_wins": 0, "team2_wins": 0, "total": 0})
+    if teams_sorted[0] == team_upper:
+        my_wins = h2h_record["team1_wins"]
+        opp_wins = h2h_record["team2_wins"]
+    else:
+        my_wins = h2h_record["team2_wins"]
+        opp_wins = h2h_record["team1_wins"]
+
+    h2h = {
+        "my_wins": my_wins,
+        "opponent_wins": opp_wins,
+        "total": h2h_record["total"],
+        "my_win_pct": round(my_wins / h2h_record["total"] * 100, 1) if h2h_record["total"] > 0 else 50.0,
+    }
+
+    # Win probability
+    win_prob = None
+    impact_data = None
+    classification = None
+    if match["status"] == "upcoming":
+        elo_ratings = compute_current_elo(completed)
+        wp = calculate_match_probability(match, completed, elo_ratings, venues, h2h_data)
+        if match["team1"] != team_upper:
+            wp = 1.0 - wp
+        win_prob = round(wp, 3)
+
+        # Impact (lightweight: use the estimate, not full sim)
+        standings = calculate_all_standings(completed)
+        standings_dict = {s["team"]: s for s in standings}
+        team_remaining_count = sum(
+            1 for m in remaining
+            if m["team1"] == team_upper or m["team2"] == team_upper
+        )
+        from apps.engine.classifier import classify_match, estimate_impact
+        impact_val = estimate_impact(team_upper, match, standings_dict, team_remaining_count)
+
+        sim_results = simulate_season(n_sims=50000)
+        team_top4 = next(r for r in sim_results if r["team"] == team_upper)["top4_pct"]
+        classification = classify_match(wp, impact_val, team_top4)
+        impact_data = {"impact_pct": impact_val, "team_top4_pct": team_top4}
+
+    # Completed match result
+    result_data = None
+    if match["status"] == "completed":
+        won = match.get("winner") == team_upper
+        result_data = {
+            "result": "won" if won else "lost",
+            "score_team1": match.get("score_team1"),
+            "overs_team1": match.get("overs_team1"),
+            "score_team2": match.get("score_team2"),
+            "overs_team2": match.get("overs_team2"),
+            "winner": match.get("winner"),
+        }
+
+    # Weather forecast (upcoming matches only)
+    weather_data = None
+    if match["status"] == "upcoming":
+        from apps.engine.weather_api import get_weather_for_match
+        weather_data = get_weather_for_match(venue_key, match["date"], match["time"])
+
+    # Player form
+    from apps.engine.cricket_api import get_match_players
+    players = get_match_players(team_upper, opponent)
+
+    return {
+        "match_id": match_id,
+        "team": team_upper,
+        "opponent": opponent,
+        "date": match["date"],
+        "time": match["time"],
+        "status": match["status"],
+        "is_home": is_home,
+        "win_prob": win_prob,
+        "classification": classification,
+        "impact": impact_data,
+        "result": result_data,
+        "venue": venue_intel,
+        "toss": toss_analysis,
+        "h2h": h2h,
+        "weather": weather_data,
+        "players": players,
         "generated_at": _now_ist(),
     }

@@ -1,0 +1,427 @@
+{
+  "last_updated": "2026-04-04",
+  "players": {
+    "virat_kohli": {
+      "name": "Virat Kohli",
+      "team": "RCB",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "SRH", "date": "2026-03-28", "runs": 83, "balls": 46, "fours": 8, "sixes": 4, "strike_rate": 180.4, "not_out": false}
+      ]
+    },
+    "faf_du_plessis": {
+      "name": "Faf du Plessis",
+      "team": "RCB",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "SRH", "date": "2026-03-28", "runs": 52, "balls": 38, "fours": 6, "sixes": 2, "strike_rate": 136.8, "not_out": false}
+      ]
+    },
+    "rajat_patidar": {
+      "name": "Rajat Patidar",
+      "team": "RCB",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "SRH", "date": "2026-03-28", "runs": 41, "balls": 22, "fours": 3, "sixes": 3, "strike_rate": 186.4, "not_out": true}
+      ]
+    },
+    "mohammed_siraj": {
+      "name": "Mohammed Siraj",
+      "team": "RCB",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "SRH", "date": "2026-03-28", "overs": "4.0", "runs_conceded": 32, "wickets": 2, "economy": 8.0}
+      ]
+    },
+    "josh_hazlewood": {
+      "name": "Josh Hazlewood",
+      "team": "RCB",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "SRH", "date": "2026-03-28", "overs": "3.4", "runs_conceded": 25, "wickets": 3, "economy": 6.82}
+      ]
+    },
+    "ruturaj_gaikwad": {
+      "name": "Ruturaj Gaikwad",
+      "team": "CSK",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "RR", "date": "2026-03-30", "runs": 34, "balls": 28, "fours": 4, "sixes": 1, "strike_rate": 121.4, "not_out": false}
+      ]
+    },
+    "devon_conway": {
+      "name": "Devon Conway",
+      "team": "CSK",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "RR", "date": "2026-03-30", "runs": 22, "balls": 20, "fours": 2, "sixes": 1, "strike_rate": 110.0, "not_out": false}
+      ]
+    },
+    "ravindra_jadeja": {
+      "name": "Ravindra Jadeja",
+      "team": "CSK",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "RR", "date": "2026-03-30", "batting": {"runs": 18, "balls": 15, "strike_rate": 120.0}, "bowling": {"overs": "4.0", "runs_conceded": 22, "wickets": 1, "economy": 5.5}}
+      ]
+    },
+    "matheesha_pathirana": {
+      "name": "Matheesha Pathirana",
+      "team": "CSK",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "RR", "date": "2026-03-30", "overs": "3.1", "runs_conceded": 28, "wickets": 1, "economy": 8.84}
+      ]
+    },
+    "deepak_chahar": {
+      "name": "Deepak Chahar",
+      "team": "CSK",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "RR", "date": "2026-03-30", "overs": "4.0", "runs_conceded": 18, "wickets": 0, "economy": 4.5}
+      ]
+    },
+    "rohit_sharma": {
+      "name": "Rohit Sharma",
+      "team": "MI",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "KKR", "date": "2026-03-29", "runs": 68, "balls": 42, "fours": 7, "sixes": 3, "strike_rate": 161.9, "not_out": false}
+      ]
+    },
+    "suryakumar_yadav": {
+      "name": "Suryakumar Yadav",
+      "team": "MI",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "KKR", "date": "2026-03-29", "runs": 72, "balls": 35, "fours": 5, "sixes": 6, "strike_rate": 205.7, "not_out": true}
+      ]
+    },
+    "hardik_pandya": {
+      "name": "Hardik Pandya",
+      "team": "MI",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "KKR", "date": "2026-03-29", "batting": {"runs": 45, "balls": 28, "strike_rate": 160.7}, "bowling": {"overs": "4.0", "runs_conceded": 38, "wickets": 2, "economy": 9.5}}
+      ]
+    },
+    "jasprit_bumrah": {
+      "name": "Jasprit Bumrah",
+      "team": "MI",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "KKR", "date": "2026-03-29", "overs": "4.0", "runs_conceded": 28, "wickets": 3, "economy": 7.0}
+      ]
+    },
+    "trent_boult": {
+      "name": "Trent Boult",
+      "team": "MI",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "KKR", "date": "2026-03-29", "overs": "4.0", "runs_conceded": 42, "wickets": 1, "economy": 10.5}
+      ]
+    },
+    "sunil_narine": {
+      "name": "Sunil Narine",
+      "team": "KKR",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "MI", "date": "2026-03-29", "batting": {"runs": 58, "balls": 32, "strike_rate": 181.3}, "bowling": {"overs": "4.0", "runs_conceded": 30, "wickets": 1, "economy": 7.5}},
+        {"match_id": "M006", "vs": "SRH", "date": "2026-04-02", "batting": {"runs": 22, "balls": 18, "strike_rate": 122.2}, "bowling": {"overs": "4.0", "runs_conceded": 42, "wickets": 0, "economy": 10.5}}
+      ]
+    },
+    "andre_russell": {
+      "name": "Andre Russell",
+      "team": "KKR",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "MI", "date": "2026-03-29", "batting": {"runs": 44, "balls": 22, "strike_rate": 200.0}, "bowling": {"overs": "3.0", "runs_conceded": 32, "wickets": 1, "economy": 10.67}},
+        {"match_id": "M006", "vs": "SRH", "date": "2026-04-02", "batting": {"runs": 35, "balls": 20, "strike_rate": 175.0}, "bowling": {"overs": "2.0", "runs_conceded": 28, "wickets": 0, "economy": 14.0}}
+      ]
+    },
+    "phil_salt": {
+      "name": "Phil Salt",
+      "team": "KKR",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "MI", "date": "2026-03-29", "runs": 62, "balls": 38, "fours": 6, "sixes": 4, "strike_rate": 163.2, "not_out": false},
+        {"match_id": "M006", "vs": "SRH", "date": "2026-04-02", "runs": 28, "balls": 22, "fours": 3, "sixes": 1, "strike_rate": 127.3, "not_out": false}
+      ]
+    },
+    "varun_chakravarthy": {
+      "name": "Varun Chakravarthy",
+      "team": "KKR",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "MI", "date": "2026-03-29", "overs": "4.0", "runs_conceded": 35, "wickets": 1, "economy": 8.75},
+        {"match_id": "M006", "vs": "SRH", "date": "2026-04-02", "overs": "4.0", "runs_conceded": 48, "wickets": 1, "economy": 12.0}
+      ]
+    },
+    "mitchell_starc": {
+      "name": "Mitchell Starc",
+      "team": "KKR",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M002", "vs": "MI", "date": "2026-03-29", "overs": "4.0", "runs_conceded": 45, "wickets": 1, "economy": 11.25},
+        {"match_id": "M006", "vs": "SRH", "date": "2026-04-02", "overs": "4.0", "runs_conceded": 38, "wickets": 2, "economy": 9.5}
+      ]
+    },
+    "heinrich_klaasen": {
+      "name": "Heinrich Klaasen",
+      "team": "SRH",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "RCB", "date": "2026-03-28", "runs": 56, "balls": 32, "fours": 4, "sixes": 4, "strike_rate": 175.0, "not_out": false},
+        {"match_id": "M006", "vs": "KKR", "date": "2026-04-02", "runs": 72, "balls": 38, "fours": 5, "sixes": 5, "strike_rate": 189.5, "not_out": false}
+      ]
+    },
+    "travis_head": {
+      "name": "Travis Head",
+      "team": "SRH",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "RCB", "date": "2026-03-28", "runs": 48, "balls": 30, "fours": 5, "sixes": 2, "strike_rate": 160.0, "not_out": false},
+        {"match_id": "M006", "vs": "KKR", "date": "2026-04-02", "runs": 89, "balls": 42, "fours": 8, "sixes": 6, "strike_rate": 211.9, "not_out": false}
+      ]
+    },
+    "pat_cummins": {
+      "name": "Pat Cummins",
+      "team": "SRH",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "RCB", "date": "2026-03-28", "overs": "3.4", "runs_conceded": 42, "wickets": 1, "economy": 11.45},
+        {"match_id": "M006", "vs": "KKR", "date": "2026-04-02", "overs": "4.0", "runs_conceded": 22, "wickets": 3, "economy": 5.5}
+      ]
+    },
+    "bhuvneshwar_kumar": {
+      "name": "Bhuvneshwar Kumar",
+      "team": "SRH",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "RCB", "date": "2026-03-28", "overs": "4.0", "runs_conceded": 38, "wickets": 2, "economy": 9.5},
+        {"match_id": "M006", "vs": "KKR", "date": "2026-04-02", "overs": "4.0", "runs_conceded": 28, "wickets": 2, "economy": 7.0}
+      ]
+    },
+    "abhishek_sharma": {
+      "name": "Abhishek Sharma",
+      "team": "SRH",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M001", "vs": "RCB", "date": "2026-03-28", "batting": {"runs": 38, "balls": 22, "strike_rate": 172.7}, "bowling": {"overs": "2.0", "runs_conceded": 18, "wickets": 0, "economy": 9.0}},
+        {"match_id": "M006", "vs": "KKR", "date": "2026-04-02", "batting": {"runs": 32, "balls": 18, "strike_rate": 177.8}, "bowling": {"overs": "1.0", "runs_conceded": 12, "wickets": 0, "economy": 12.0}}
+      ]
+    },
+    "sanju_samson": {
+      "name": "Sanju Samson",
+      "team": "RR",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "CSK", "date": "2026-03-30", "runs": 68, "balls": 35, "fours": 6, "sixes": 5, "strike_rate": 194.3, "not_out": true}
+      ]
+    },
+    "yashasvi_jaiswal": {
+      "name": "Yashasvi Jaiswal",
+      "team": "RR",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "CSK", "date": "2026-03-30", "runs": 45, "balls": 28, "fours": 5, "sixes": 2, "strike_rate": 160.7, "not_out": false}
+      ]
+    },
+    "ravichandran_ashwin": {
+      "name": "Ravichandran Ashwin",
+      "team": "RR",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "CSK", "date": "2026-03-30", "overs": "4.0", "runs_conceded": 18, "wickets": 3, "economy": 4.5}
+      ]
+    },
+    "trent_boult_rr": {
+      "name": "Sandeep Sharma",
+      "team": "RR",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "CSK", "date": "2026-03-30", "overs": "4.0", "runs_conceded": 24, "wickets": 2, "economy": 6.0}
+      ]
+    },
+    "shimron_hetmyer": {
+      "name": "Shimron Hetmyer",
+      "team": "RR",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M003", "vs": "CSK", "date": "2026-03-30", "runs": 12, "balls": 10, "fours": 1, "sixes": 1, "strike_rate": 120.0, "not_out": true}
+      ]
+    },
+    "rishabh_pant": {
+      "name": "Rishabh Pant",
+      "team": "DC",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "LSG", "date": "2026-04-01", "runs": 58, "balls": 38, "fours": 6, "sixes": 3, "strike_rate": 152.6, "not_out": true}
+      ]
+    },
+    "jake_fraser_mcgurk": {
+      "name": "Jake Fraser-McGurk",
+      "team": "DC",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "LSG", "date": "2026-04-01", "runs": 42, "balls": 22, "fours": 3, "sixes": 4, "strike_rate": 190.9, "not_out": false}
+      ]
+    },
+    "axar_patel": {
+      "name": "Axar Patel",
+      "team": "DC",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "LSG", "date": "2026-04-01", "batting": {"runs": 22, "balls": 18, "strike_rate": 122.2}, "bowling": {"overs": "4.0", "runs_conceded": 24, "wickets": 2, "economy": 6.0}}
+      ]
+    },
+    "anrich_nortje": {
+      "name": "Anrich Nortje",
+      "team": "DC",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "LSG", "date": "2026-04-01", "overs": "4.0", "runs_conceded": 30, "wickets": 2, "economy": 7.5}
+      ]
+    },
+    "kuldeep_yadav": {
+      "name": "Kuldeep Yadav",
+      "team": "DC",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "LSG", "date": "2026-04-01", "overs": "4.0", "runs_conceded": 22, "wickets": 3, "economy": 5.5}
+      ]
+    },
+    "shikhar_dhawan_pbks": {
+      "name": "Shreyas Iyer",
+      "team": "PBKS",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "GT", "date": "2026-03-31", "runs": 55, "balls": 38, "fours": 5, "sixes": 3, "strike_rate": 144.7, "not_out": false}
+      ]
+    },
+    "jonny_bairstow": {
+      "name": "Jonny Bairstow",
+      "team": "PBKS",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "GT", "date": "2026-03-31", "runs": 38, "balls": 28, "fours": 4, "sixes": 2, "strike_rate": 135.7, "not_out": false}
+      ]
+    },
+    "liam_livingstone": {
+      "name": "Liam Livingstone",
+      "team": "PBKS",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "GT", "date": "2026-03-31", "batting": {"runs": 32, "balls": 18, "strike_rate": 177.8}, "bowling": {"overs": "2.0", "runs_conceded": 18, "wickets": 1, "economy": 9.0}}
+      ]
+    },
+    "arshdeep_singh": {
+      "name": "Arshdeep Singh",
+      "team": "PBKS",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "GT", "date": "2026-03-31", "overs": "4.0", "runs_conceded": 28, "wickets": 3, "economy": 7.0}
+      ]
+    },
+    "kagiso_rabada": {
+      "name": "Kagiso Rabada",
+      "team": "PBKS",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "GT", "date": "2026-03-31", "overs": "4.0", "runs_conceded": 32, "wickets": 2, "economy": 8.0}
+      ]
+    },
+    "shubman_gill": {
+      "name": "Shubman Gill",
+      "team": "GT",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "PBKS", "date": "2026-03-31", "runs": 48, "balls": 35, "fours": 5, "sixes": 2, "strike_rate": 137.1, "not_out": false}
+      ]
+    },
+    "david_miller": {
+      "name": "David Miller",
+      "team": "GT",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "PBKS", "date": "2026-03-31", "runs": 35, "balls": 25, "fours": 2, "sixes": 3, "strike_rate": 140.0, "not_out": true}
+      ]
+    },
+    "rashid_khan": {
+      "name": "Rashid Khan",
+      "team": "GT",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "PBKS", "date": "2026-03-31", "batting": {"runs": 18, "balls": 10, "strike_rate": 180.0}, "bowling": {"overs": "4.0", "runs_conceded": 28, "wickets": 2, "economy": 7.0}}
+      ]
+    },
+    "mohammed_shami": {
+      "name": "Mohammed Shami",
+      "team": "GT",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "PBKS", "date": "2026-03-31", "overs": "4.0", "runs_conceded": 35, "wickets": 1, "economy": 8.75}
+      ]
+    },
+    "noor_ahmad": {
+      "name": "Noor Ahmad",
+      "team": "GT",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M004", "vs": "PBKS", "date": "2026-03-31", "overs": "4.0", "runs_conceded": 30, "wickets": 2, "economy": 7.5}
+      ]
+    },
+    "kl_rahul": {
+      "name": "KL Rahul",
+      "team": "LSG",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "DC", "date": "2026-04-01", "runs": 42, "balls": 35, "fours": 4, "sixes": 1, "strike_rate": 120.0, "not_out": false}
+      ]
+    },
+    "quinton_de_kock": {
+      "name": "Quinton de Kock",
+      "team": "LSG",
+      "role": "batter",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "DC", "date": "2026-04-01", "runs": 28, "balls": 22, "fours": 3, "sixes": 1, "strike_rate": 127.3, "not_out": false}
+      ]
+    },
+    "marcus_stoinis": {
+      "name": "Marcus Stoinis",
+      "team": "LSG",
+      "role": "allrounder",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "DC", "date": "2026-04-01", "batting": {"runs": 25, "balls": 18, "strike_rate": 138.9}, "bowling": {"overs": "3.0", "runs_conceded": 28, "wickets": 1, "economy": 9.33}}
+      ]
+    },
+    "mark_wood": {
+      "name": "Mark Wood",
+      "team": "LSG",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "DC", "date": "2026-04-01", "overs": "4.0", "runs_conceded": 32, "wickets": 2, "economy": 8.0}
+      ]
+    },
+    "ravi_bishnoi": {
+      "name": "Ravi Bishnoi",
+      "team": "LSG",
+      "role": "bowler",
+      "recent_matches": [
+        {"match_id": "M005", "vs": "DC", "date": "2026-04-01", "overs": "4.0", "runs_conceded": 25, "wickets": 1, "economy": 6.25}
+      ]
+    }
+  },
+  "team_squads": {
+    "RCB": ["virat_kohli", "faf_du_plessis", "rajat_patidar", "mohammed_siraj", "josh_hazlewood"],
+    "CSK": ["ruturaj_gaikwad", "devon_conway", "ravindra_jadeja", "matheesha_pathirana", "deepak_chahar"],
+    "MI": ["rohit_sharma", "suryakumar_yadav", "hardik_pandya", "jasprit_bumrah", "trent_boult"],
+    "KKR": ["phil_salt", "sunil_narine", "andre_russell", "varun_chakravarthy", "mitchell_starc"],
+    "SRH": ["travis_head", "heinrich_klaasen", "abhishek_sharma", "pat_cummins", "bhuvneshwar_kumar"],
+    "RR": ["yashasvi_jaiswal", "sanju_samson", "shimron_hetmyer", "ravichandran_ashwin", "trent_boult_rr"],
+    "DC": ["rishabh_pant", "jake_fraser_mcgurk", "axar_patel", "anrich_nortje", "kuldeep_yadav"],
+    "PBKS": ["shikhar_dhawan_pbks", "jonny_bairstow", "liam_livingstone", "arshdeep_singh", "kagiso_rabada"],
+    "GT": ["shubman_gill", "david_miller", "rashid_khan", "mohammed_shami", "noor_ahmad"],
+    "LSG": ["kl_rahul", "quinton_de_kock", "marcus_stoinis", "mark_wood", "ravi_bishnoi"]
+  }
+}

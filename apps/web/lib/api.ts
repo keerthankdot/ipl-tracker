@@ -1,4 +1,4 @@
-import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse, ScenarioOutcome, ScenarioResponse, WinPathResponse } from "./types";
+import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse, ScenarioOutcome, ScenarioResponse, WinPathResponse, NRRStrategyResponse, MatchDetailResponse } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -47,5 +47,17 @@ export async function runScenario(outcomes: ScenarioOutcome[]): Promise<Scenario
 export async function getWinPath(team: string): Promise<WinPathResponse> {
   const res = await fetch(`${API_URL}/api/winpath/${team}`);
   if (!res.ok) throw new Error(`WinPath API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getNRRStrategy(team: string): Promise<NRRStrategyResponse> {
+  const res = await fetch(`${API_URL}/api/nrr-strategy/${team}`);
+  if (!res.ok) throw new Error(`NRR Strategy API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getMatchDetail(matchId: string, team: string): Promise<MatchDetailResponse> {
+  const res = await fetch(`${API_URL}/api/match-detail/${matchId}/${team}`);
+  if (!res.ok) throw new Error(`Match detail API error: ${res.status}`);
   return res.json();
 }

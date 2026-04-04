@@ -26,6 +26,7 @@ import WinPathRoadmap from "@/components/WinPathRoadmap";
 import { SkeletonCard } from "@/components/SkeletonLoaders";
 import ScenarioTheater from "@/components/ScenarioTheater";
 import TeamSchedule from "@/components/TeamSchedule";
+import NRRStrategyPanel from "@/components/NRRStrategyPanel";
 import StandingsTable from "@/components/StandingsTable";
 
 export default function TeamDashboard() {
@@ -127,6 +128,8 @@ export default function TeamDashboard() {
           />
 
           <NRRDisplay standings={standings} teamKey={teamKey} />
+
+          <NRRStrategyPanel teamKey={teamKey} />
 
           {impact && <ImpactPanel impact={impact} teamKey={teamKey} />}
 
