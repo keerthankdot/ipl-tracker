@@ -1,4 +1,4 @@
-import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse, ScenarioOutcome, ScenarioResponse } from "./types";
+import type { StandingsResponse, SimulateResponse, ScheduleResponse, ImpactResponse, ScenarioOutcome, ScenarioResponse, WinPathResponse } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -41,5 +41,11 @@ export async function runScenario(outcomes: ScenarioOutcome[]): Promise<Scenario
     body: JSON.stringify({ outcomes }),
   });
   if (!res.ok) throw new Error(`Scenario API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getWinPath(team: string): Promise<WinPathResponse> {
+  const res = await fetch(`${API_URL}/api/winpath/${team}`);
+  if (!res.ok) throw new Error(`WinPath API error: ${res.status}`);
   return res.json();
 }

@@ -102,3 +102,41 @@ export interface ScenarioResponse {
   simulations_run: number;
   generated_at: string;
 }
+
+export interface WinPathMatch {
+  id: string;
+  match_number: number;
+  date: string;
+  time: string;
+  opponent: string;
+  venue: string;
+  venue_name: string;
+  venue_city: string;
+  is_home: boolean;
+  status: "completed" | "upcoming";
+  result: "won" | "lost" | null;
+  score: string | null;
+  win_prob: number | null;
+  impact: number | null;
+  classification: "MUST_WIN" | "FAVORED" | "TOSS_UP" | "TOUGH" | "UPSET_NEEDED" | null;
+}
+
+export interface WinPathSummary {
+  matches_played: number;
+  matches_remaining: number;
+  wins: number;
+  losses: number;
+  must_wins: number;
+  favored: number;
+  toss_ups: number;
+  tough: number;
+  upset_needed: number;
+}
+
+export interface WinPathResponse {
+  team: string;
+  team_top4_pct: number;
+  matches: WinPathMatch[];
+  summary: WinPathSummary;
+  generated_at: string;
+}

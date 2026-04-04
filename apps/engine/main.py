@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 
+from apps.engine.classifier import classify_match, estimate_impact
 from apps.engine.elo import compute_current_elo
 from apps.engine.nrr import ALL_TEAMS, calculate_all_standings
 from apps.engine.simulator import (
@@ -20,7 +21,7 @@ from apps.engine.simulator import (
     simulate_season,
     simulate_with_forced_outcomes,
 )
-from apps.engine.weights import calculate_match_probability, load_h2h
+from apps.engine.weights import TEAM_HOME_CITIES, calculate_match_probability, load_h2h
 
 app = FastAPI(
     title="Win Path Engine",
@@ -300,5 +301,93 @@ def scenario(req: ScenarioRequest):
         "deltas": deltas,
         "forced_count": len(forced),
         "simulations_run": req.n_simulations,
+        "generated_at": _now_ist(),
+    }
+
+
+@app.get("/api/winpath/{team}")
+def winpath(team: str):
+    team_upper = team.upper()
+    if team_upper not in ALL_TEAMS:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=404, content={"error": f"Unknown team: {team}"})
+
+    sched = load_schedule()
+    completed = get_completed_matches(sched)
+    remaining = get_remaining_matches(sched)
+    venues = load_venues()
+
+    sim_results = simulate_season(n_sims=50000)
+    team_result = next(r for r in sim_results if r["team"] == team_upper)
+    team_top4 = team_result["top4_pct"]
+
+    elo_ratings = compute_current_elo(completed)
+    h2h_data = load_h2h()
+    standings = calculate_all_standings(completed)
+    standings_dict = {s["team"]: s for s in standings}
+
+    all_team_matches = [
+        m for m in sched["matches"]
+        if m.get("team1") == team_upper or m.get("team2") == team_upper
+    ]
+    team_remaining = [m for m in all_team_matches if m["status"] == "upcoming"]
+
+    match_list = []
+    for m in all_team_matches:
+        opponent = m["team2"] if m["team1"] == team_upper else m["team1"]
+        venue_data = venues.get(m["venue"], {})
+        is_home = venue_data.get("city", "") in TEAM_HOME_CITIES.get(team_upper, [])
+
+        if m["status"] == "completed":
+            won = m.get("winner") == team_upper
+            score = f"{m.get('score_team1', '?')} ({m.get('overs_team1', '?')}) vs {m.get('score_team2', '?')} ({m.get('overs_team2', '?')})"
+            match_list.append({
+                "id": m["id"], "match_number": m["match_number"],
+                "date": m["date"], "time": m["time"],
+                "opponent": opponent, "venue": m["venue"],
+                "venue_name": venue_data.get("name", m["venue"]),
+                "venue_city": venue_data.get("city", ""),
+                "is_home": is_home, "status": "completed",
+                "result": "won" if won else "lost", "score": score,
+                "win_prob": None, "impact": None, "classification": None,
+            })
+        else:
+            win_prob = calculate_match_probability(m, completed, elo_ratings, venues, h2h_data)
+            if m["team1"] != team_upper:
+                win_prob = 1.0 - win_prob
+            impact_val = estimate_impact(team_upper, m, standings_dict, len(team_remaining))
+            classification = classify_match(win_prob, impact_val, team_top4)
+            match_list.append({
+                "id": m["id"], "match_number": m["match_number"],
+                "date": m["date"], "time": m["time"],
+                "opponent": opponent, "venue": m["venue"],
+                "venue_name": venue_data.get("name", m["venue"]),
+                "venue_city": venue_data.get("city", ""),
+                "is_home": is_home, "status": "upcoming",
+                "result": None, "score": None,
+                "win_prob": round(win_prob, 3),
+                "impact": impact_val,
+                "classification": classification,
+            })
+
+    match_list.sort(key=lambda m: m["date"])
+    upcoming = [m for m in match_list if m["status"] == "upcoming"]
+    completed_team = [m for m in match_list if m["status"] == "completed"]
+
+    return {
+        "team": team_upper,
+        "team_top4_pct": team_top4,
+        "matches": match_list,
+        "summary": {
+            "matches_played": len(completed_team),
+            "matches_remaining": len(upcoming),
+            "wins": sum(1 for m in completed_team if m["result"] == "won"),
+            "losses": sum(1 for m in completed_team if m["result"] == "lost"),
+            "must_wins": sum(1 for m in upcoming if m["classification"] == "MUST_WIN"),
+            "favored": sum(1 for m in upcoming if m["classification"] == "FAVORED"),
+            "toss_ups": sum(1 for m in upcoming if m["classification"] == "TOSS_UP"),
+            "tough": sum(1 for m in upcoming if m["classification"] == "TOUGH"),
+            "upset_needed": sum(1 for m in upcoming if m["classification"] == "UPSET_NEEDED"),
+        },
         "generated_at": _now_ist(),
     }
